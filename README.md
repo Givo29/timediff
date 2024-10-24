@@ -61,6 +61,8 @@ The multi-unit diff function allows you to specify two extra parameters over the
 
 The Diff function allows you to specify what units to calculate and return. This is especially useful when used in conjuction with the running parameter below.
 
+Note: The order you specify doesn't matter, the function will always calculate from largest to smallest unit.
+
 ```go
 startDate := DateTime{time.Date(2024, 01, 01, 0, 0, 0, 0, time.UTC)}    // January 1st 2024
 endDate := time.Date(2025, 07, 15, 0, 0, 0, 0, time.UTC)                // July 15th 2025
