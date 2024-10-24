@@ -54,8 +54,78 @@ startDate := timediff.DateTime{time.Now()}
 
 The multi-unit diff function allows you to specify two extra parameters over the single unit functions.
 
-1. Running diff calculation as a boolean
-2. Multiple units as a string slice
+1. Multiple units as a string slice
+2. Enable a running diff calculation as a boolean
+
+### Multiple Units
+
+The Diff function allows you to specify what units to calculate and return. This is especially useful when used in conjuction with the running parameter below.
+
+```go
+startDate := DateTime{time.Date(2024, 01, 01, 0, 0, 0, 0, time.UTC)}    // January 1st 2024
+endDate := time.Date(2025, 07, 15, 0, 0, 0, 0, time.UTC)                // July 15th 2025
+
+diff, _ := startDate.Diff(endDate, false, []string{"years", "months", "weeks", "days"}) // Only calculate years, months, weeks and days
+fmt.Println(diff)
+
+// Output:
+// DateDiff{
+//   years: 1
+//   months: 18
+//   weeks: 80
+//   days: 561
+// }
+```
+
+**Allowed Units:**
+| Unit |
+|--------------|
+| years |
+| months |
+| weeks |
+| days |
+| hours |
+| minutes |
+| seconds |
+| milliseconds |
+| nanoseconds |
+
+### Running Calculation
+
+If the running parameter is false, each unit will be calculated separately. e.g.
+
+```go
+startDate := DateTime{time.Date(2024, 01, 01, 0, 0, 0, 0, time.UTC)}    // January 1st 2024
+endDate := time.Date(2025, 07, 15, 0, 0, 0, 0, time.UTC)                // July 15th 2025
+
+diff, _ := startDate.Diff(endDate, false, []string{"years", "months", "weeks"})
+fmt.Println(diff)
+
+// Output:
+// DateDiff{
+//   years: 1
+//   months: 18
+//   weeks: 80
+// }
+```
+
+If the running parameter is true, starting with the largest unit, the function will calculate subsequent units relative to the remainder of the previous.
+For example, in our example below, 2024/01/01 is 1 year, 6 months **and** 2 weeks from 2025/15/07.
+
+```go
+startDate := DateTime{time.Date(2024, 01, 01, 0, 0, 0, 0, time.UTC)}    // January 1st 2024
+endDate := time.Date(2025, 07, 15, 0, 0, 0, 0, time.UTC)                // July 15th 2025
+
+diff, _ := startDate.Diff(endDate, false, []string{"years", "months", "weeks"})
+fmt.Println(diff)
+
+// Output:
+// DateDiff{
+//   years: 1
+//   months: 6
+//   weeks: 2
+// }
+```
 
 ## Single Unit Diff Functions
 
