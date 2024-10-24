@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math"
 	"slices"
 	"time"
 )
@@ -23,7 +24,7 @@ type DateTime struct {
 	time.Time
 }
 
-func (t DateTime) Diff(endDate time.Time, units []string) (DateDiff, error) {
+func (t DateTime) Diff(endDate time.Time, running bool, units []string) (DateDiff, error) {
 	if endDate.Before(t.Time) {
 		return DateDiff{}, errors.New("End date before start date")
 	}
@@ -32,34 +33,62 @@ func (t DateTime) Diff(endDate time.Time, units []string) (DateDiff, error) {
 	if slices.Contains(units, "years") {
 		diff, _ := t.DiffYears(endDate)
 		runningDiff.years = diff.years
+		if running {
+			endDate = endDate.AddDate(-diff.years, 0, 0)
+		}
 	}
 	if slices.Contains(units, "months") {
 		diff, _ := t.DiffMonths(endDate)
 		runningDiff.months = diff.months
+		if running {
+			endDate = endDate.AddDate(0, -diff.months, 0)
+		}
 	}
 	if slices.Contains(units, "weeks") {
 		diff, _ := t.DiffWeeks(endDate)
 		runningDiff.weeks = diff.weeks
+		if running {
+			endDate = endDate.AddDate(0, 0, -(diff.weeks * 7))
+		}
 	}
 	if slices.Contains(units, "days") {
 		diff, _ := t.DiffDays(endDate)
 		runningDiff.days = diff.days
+		if running {
+			endDate = endDate.AddDate(0, 0, -diff.days)
+		}
 	}
 	if slices.Contains(units, "hours") {
 		diff, _ := t.DiffHours(endDate)
 		runningDiff.hours = diff.hours
+		if running {
+			duration, _ := time.ParseDuration(fmt.Sprintf("-%dh%dns", diff.hours, diff.nanoseconds))
+			endDate = endDate.Add(duration)
+		}
 	}
 	if slices.Contains(units, "minutes") {
 		diff, _ := t.DiffMinutes(endDate)
 		runningDiff.minutes = diff.minutes
+		if running {
+			duration, _ := time.ParseDuration(fmt.Sprintf("-%dm%dns", diff.minutes, diff.nanoseconds))
+			endDate = endDate.Add(duration)
+		}
 	}
 	if slices.Contains(units, "seconds") {
 		diff, _ := t.DiffSeconds(endDate)
 		runningDiff.seconds = diff.seconds
+		if running {
+			duration, _ := time.ParseDuration(fmt.Sprintf("-%ds%dns", diff.seconds, diff.nanoseconds))
+			endDate = endDate.Add(duration)
+		}
 	}
 	if slices.Contains(units, "milliseconds") {
 		diff, _ := t.DiffMilliseconds(endDate)
 		runningDiff.milliseconds = diff.milliseconds
+		if running {
+			duration, _ := time.ParseDuration(fmt.Sprintf("-%dms%dns", diff.milliseconds, diff.nanoseconds))
+			endDate = endDate.Add(duration)
+		}
 	}
 	if slices.Contains(units, "nanoseconds") {
 		diff := int(endDate.Sub(t.Time))
@@ -104,12 +133,10 @@ func (t DateTime) DiffWeeks(endDate time.Time) (DateDiff, error) {
 		return DateDiff{}, errors.New("End date before start date")
 	}
 
-	hrInNs := 3600000000000
 	dateSub := endDate.Sub(t.Time)
-	remainder := int(dateSub) - (hrInNs * int(dateSub.Hours()-0.5))
+	remainder := int(dateSub) - int(dateSub.Nanoseconds())
 
-	weekDiff := int(dateSub.Hours()-0.5) / 24 / 7
-
+	weekDiff := int(math.Floor(dateSub.Hours())) / 24 / 7
 	return DateDiff{weeks: weekDiff, nanoseconds: remainder}, nil
 }
 
@@ -118,12 +145,11 @@ func (t DateTime) DiffDays(endDate time.Time) (DateDiff, error) {
 		return DateDiff{}, errors.New("End date before start date")
 	}
 
-	hrInNs := 3600000000000
 	dateSub := endDate.Sub(t.Time)
-	remainder := int(dateSub) - (hrInNs * int(dateSub.Hours()-0.5))
+	remainder := int(dateSub) - int(dateSub.Nanoseconds())
 
-	dayDiff := int(dateSub.Hours()-0.5) / 24
-
+	
+	dayDiff := int(math.Floor(dateSub.Hours())) / 24
 	return DateDiff{days: dayDiff, nanoseconds: remainder}, nil
 }
 
@@ -132,12 +158,10 @@ func (t DateTime) DiffHours(endDate time.Time) (DateDiff, error) {
 		return DateDiff{}, errors.New("End date before start date")
 	}
 
-	hrInNs := 3600000000000
 	dateSub := endDate.Sub(t.Time)
-	remainder := int(dateSub) - (hrInNs * int(dateSub.Hours()-0.5))
+	remainder := int(dateSub) - int(dateSub.Nanoseconds())
 
-	hourDiff := int(dateSub.Hours() - 0.5)
-
+	hourDiff := int(math.Floor(dateSub.Hours()))
 	return DateDiff{hours: hourDiff, nanoseconds: remainder}, nil
 }
 
@@ -146,12 +170,10 @@ func (t DateTime) DiffMinutes(endDate time.Time) (DateDiff, error) {
 		return DateDiff{}, errors.New("End date before start date")
 	}
 
-	mnInNs := 60000000000
 	dateSub := endDate.Sub(t.Time)
-	remainder := int(dateSub) - (mnInNs * int(dateSub.Minutes()-0.5))
+	remainder := int(dateSub) - int(dateSub.Nanoseconds())
 
-	minuteDiff := int(dateSub.Minutes() - 0.5)
-
+	minuteDiff := int(math.Floor(dateSub.Minutes()))
 	return DateDiff{minutes: minuteDiff, nanoseconds: remainder}, nil
 }
 
@@ -160,12 +182,10 @@ func (t DateTime) DiffSeconds(endDate time.Time) (DateDiff, error) {
 		return DateDiff{}, errors.New("End date before start date")
 	}
 
-	secInNs := 1000000000
 	dateSub := endDate.Sub(t.Time)
-	remainder := int(dateSub) - (secInNs * int(dateSub.Seconds()-0.5))
+	remainder := int(dateSub) - int(dateSub.Nanoseconds())
 
-	secondDiff := int(dateSub.Seconds() - 0.5)
-
+	secondDiff := int(math.Floor(dateSub.Seconds()))
 	return DateDiff{seconds: secondDiff, nanoseconds: remainder}, nil
 }
 
@@ -174,18 +194,16 @@ func (t DateTime) DiffMilliseconds(endDate time.Time) (DateDiff, error) {
 		return DateDiff{}, errors.New("End date before start date")
 	}
 
-	msInNs := 1000000
 	dateSub := endDate.Sub(t.Time)
-	remainder := int(dateSub) - (msInNs * int(dateSub.Milliseconds()))
+	remainder := int(dateSub) - int(dateSub.Nanoseconds())
 
 	millisecondDiff := int(dateSub.Milliseconds())
-
 	return DateDiff{milliseconds: millisecondDiff, nanoseconds: remainder}, nil
 }
 
 func main() {
-	foobar := time.Date(2026, 9, 10, 12, 0, 0, 0, time.Local)
-	bar := DateTime{time.Now()}
+	foo := DateTime{time.Date(2024, 10, 24, 0, 0, 0, 0, time.Local)}
+	bar := time.Date(2026, 9, 10, 1, 30, 0, 0, time.Local)
 
-	fmt.Println(bar.Diff(foobar, []string{"years", "months", "weeks", "days", "hours", "minutes"}))
+	fmt.Println(foo.Diff(bar, true, []string{"years", "months", "weeks", "days", "hours", "minutes"}))
 }
