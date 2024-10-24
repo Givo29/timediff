@@ -187,7 +187,7 @@ func TestDiffWeeksEarlyEndDate(t *testing.T) {
 
 // Testing DiffMonths Function
 func TestDiffMonths(t *testing.T) {
-	const yrInMths = 12 
+	const yrInMths = 12
 	expectedDiff := DateDiff{months: yrInMths}
 
 	startDate := DateTime{time.Date(2024, 01, 01, 0, 0, 0, 0, time.UTC)}
@@ -208,7 +208,7 @@ func TestDiffMonthsEarlyEndDate(t *testing.T) {
 		t.Fatalf("Expected error but did not receive one")
 	}
 }
- 
+
 // Testing DiffYears Function
 func TestDiffYears(t *testing.T) {
 	expectedDiff := DateDiff{years: 10}
