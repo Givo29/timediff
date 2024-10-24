@@ -1,4 +1,4 @@
-package main
+package timediff
 
 import (
 	"errors"
@@ -199,11 +199,4 @@ func (t DateTime) DiffMilliseconds(endDate time.Time) (DateDiff, error) {
 
 	millisecondDiff := int(dateSub.Milliseconds())
 	return DateDiff{milliseconds: millisecondDiff, nanoseconds: remainder}, nil
-}
-
-func main() {
-	foo := DateTime{time.Date(2024, 10, 24, 0, 0, 0, 0, time.Local)}
-	bar := time.Date(2026, 9, 10, 1, 30, 0, 0, time.Local)
-
-	fmt.Println(foo.Diff(bar, true, []string{"years", "months", "weeks", "days", "hours", "minutes"}))
 }
