@@ -5,6 +5,42 @@ import (
 	"time"
 )
 
+// Testing Diff Function
+func TestDiffNoRunning(t *testing.T) {
+	expectedDiff := DateDiff{years: 1, months: 12, days: 365}
+
+	startDate := DateTime{time.Date(2023, 01, 01, 0, 0, 0, 0, time.UTC)}
+	endDate := time.Date(2024, 01, 01, 0, 0, 0, 0, time.UTC)
+
+	diff, err := startDate.Diff(endDate, false, []string{"years", "months", "days"})
+	if diff != expectedDiff || err != nil {
+		t.Fatalf("Diff does not match expected results")
+	}
+}
+
+func TestDiffNoRunningLeapYear(t *testing.T) {
+	expectedDiff := DateDiff{years: 1, months: 12, days: 366}
+
+	startDate := DateTime{time.Date(2024, 01, 01, 0, 0, 0, 0, time.UTC)}
+	endDate := time.Date(2025, 01, 01, 0, 0, 0, 0, time.UTC)
+
+	diff, err := startDate.Diff(endDate, false, []string{"years", "months", "days"})
+	if diff != expectedDiff || err != nil {
+		t.Fatalf("Diff does not match expected results")
+	}
+}
+
+func TestDiffRunning(t *testing.T) {
+	expectedDiff := DateDiff{years: 1, months: 6, weeks: 2, hours: 2}
+	startDate := DateTime{time.Date(2024, 01, 01, 0, 0, 0, 0, time.UTC)}
+	endDate := time.Date(2025, 07, 15, 2, 0, 0, 0, time.UTC)
+
+	diff, err := startDate.Diff(endDate, true, []string{"years", "months", "weeks", "hours"})
+	if diff != expectedDiff || err != nil {
+		t.Fatalf("Diff does not match expected results")
+	}
+}
+
 // Testing DiffMilliseconds Function
 func TestDiffMilliseconds(t *testing.T) {
 	const dayInMs = 86400000
