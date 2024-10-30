@@ -24,15 +24,15 @@ type DateTime struct {
 
 ```go
 type DateDiff struct {
-	years        int
-	months       int
-	weeks        int
-	days         int
-	hours        int
-	minutes      int
-	seconds      int
-	milliseconds int
-	nanoseconds  int
+	Years        int
+	Months       int
+	Weeks        int
+	Days         int
+	Hours        int
+	Minutes      int
+	Seconds      int
+	Milliseconds int
+	Nanoseconds  int
 }
 ```
 
