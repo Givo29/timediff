@@ -1,6 +1,6 @@
 # TimeDiff
 
-A simple package, relying on no external packages, that extends the standard time package to provide powerful datetime diffing functions. Loosely modelled after the diff function from the [Luxon.js](https://moment.github.io/luxon/#/) package.
+A simple package, relying on no external packages, that extends the standard time package to provide powerful datetime diffing functions. Inspired by the diff function from the [Luxon.js](https://moment.github.io/luxon/#/) package.
 
 ## Installation
 
@@ -118,7 +118,7 @@ For example, in our example below, 2024/01/01 is 1 year, 6 months **and** 2 week
 startDate := DateTime{time.Date(2024, 01, 01, 0, 0, 0, 0, time.UTC)}    // January 1st 2024
 endDate := time.Date(2025, 07, 15, 0, 0, 0, 0, time.UTC)                // July 15th 2025
 
-diff, _ := startDate.Diff(endDate, false, []string{"years", "months", "weeks"})
+diff, _ := startDate.Diff(endDate, true, []string{"years", "months", "weeks"})
 fmt.Println(diff)
 
 // Output:
